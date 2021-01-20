@@ -1,0 +1,15 @@
+<include target="./write/database.record.html" cond="$B2->DisplayType === 'database.record'" />
+
+<section class="document-write list-default" cond="$B2->DisplayType !== 'database.record'">
+	<form action="./" method="post" onsubmit="return procFilter(this, window.insert)" class="board_write">
+		<input type="hidden" name="mid" value="{$mid}" />
+		<input type="hidden" name="content" value="{$oDocument->getContentText()}" />
+		<input type="hidden" name="document_srl" value="{$document_srl}" />
+
+		<header>
+
+		</header>
+
+		<footer></footer>
+	</form>
+</section>

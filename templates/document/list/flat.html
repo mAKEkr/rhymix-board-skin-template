@@ -1,0 +1,50 @@
+<div class="V2-block document-list">
+	<block cond="$statusDocumentList === false">
+		<div class="no-document">{$lang->no_documents}</div>
+	</block>
+	<block cond="$statusDocumentList !== false">
+		<div class="lists flat" loop="$document_list=>$no,$document">
+			<input cond="$grant->manager" type="checkbox" name="cart" value="{$document->document_srl}" title="Check This Article" onclick="doAddDocumentCart(this)" checked="checked"|cond="$document->isCarted()" />
+			{@
+				$comment_list_count = ($document->getCommentCount() < 4) ? $document->getCommentCount() : 3;
+			}
+			<img class="user-profile list" src="{$document->getProfileImage()}"|cond="$document->getProfileImage()" src="{$V2_default_profile}"|cond="!$document->getProfileImage()" alt="" title="" />
+			<div class="list-cell document_info<!--@if($document->thumbnailExists())--> thumbnail_exist<!--@endif-->">
+				<a href="#popup_menu_area" class="member_{$document->get('member_srl')}" onclick="return false">{$document->getNickName()}</a>
+				<block cond="$document->variables['regdate'] != $document->variables['last_update']">
+					<span class="primary"><strong>{getTimeGap($document->getUpdate('YmdHis'), 'Y-m-d H:i:s')}</strong>에 갱신됨</span>
+				</block>
+				<block cond="$document->variables['regdate'] == $document->variables['last_update']">
+					<span class="primary"><strong>{getTimeGap($document->getRegdate('YmdHis'), 'Y-m-d H:i:s')}</strong>에 작성됨</span>
+				</block>
+				<hr />
+				<h1 class="comment-count-{$comment_list_count}">
+					<span class="category" cond="$module_info->use_category =='Y' && $document->variables['category_srl'] != 0" style="color:{$category_list[$document->variables['category_srl']]->color};"|cond="$category_list[$document->variables['category_srl']]->color">[{$category_list[$document->variables['category_srl']]->title}]</span>
+					<a href="{getUrl('document_srl', $document->document_srl)}">{$document->getTitle()}</a>
+					<span cond="$document->variables['voted_count'] != 0" class="count voted_count">+{$document->variables['voted_count']}</span>
+					<span cond="$document->variables['blamed_count'] != 0" class="count blamed_count">{$document->variables['blamed_count']}</span>
+					<block cond="$module_info->flat_icons != 'disable'">
+						{$document->printExtraImages(60 * 60 * $module_info->new_duration)}
+					</block>
+				</h1>
+				<img cond="$document->thumbnailExists()" class="list-thumbnail" src="{$document->getThumbnail(40, 40, 'crop')}" alt="" />
+				<div class="document_preview">{$document->getSummary('200')}</div>
+			</div>
+			<block cond="($document->getCommentCount() > 0) && ($module_info->list_newest_comment != 'disable')">
+				{@ 
+					$obj = new StdClass();
+					$obj->document_srl = $document->document_srl;
+					$obj->list_count = 3;
+					$oCommentModel = getModel('comment');
+					$newestCommentList = $oCommentModel->getNewestCommentList($obj, array('comment_srl', 'member_srl', 'nick_name', 'user_name'));
+				}
+				<div class="comment-authors">
+					<a loop="$newestCommentList=>$val, $comment" href="{getUrl('document_srl', $document->document_srl)}#comment_{$comment->variables['comment_srl']}">
+						<img class="user-profile small" src="{$comment->getProfileImage()}"|cond="$comment->getProfileImage()" src="{$V2_default_profile}"|cond="!$comment->getProfileImage()" title="{$comment->variables['nick_name']} ({$comment->variables['user_id']})" alt="" />
+					</a>
+				</div>
+			</block>
+			<div class="list-cell number" title="댓글"><i class="ss-icon ss-chat" title=""></i>{$document->getCommentCount()}</div>
+		</div>
+	</block>
+</div>

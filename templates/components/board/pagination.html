@@ -1,0 +1,17 @@
+<div class="b2-component b2-component-pagination">
+  {@
+    $paginationDisable = (object)[
+      'firstPage' => ($page - $B2->Variables->pagination->displayLength) <= 0,
+      'lastPage' => ceil($page / $B2->Variables->pagination->displayLength) >= floor($B2->Variables->pagination->lastPage / $B2->Variables->pagination->displayLength) 
+    ];
+  }
+  <a class="b2-component-pagination-firstPage {$paginationDisable->firstPage === true ? 'b2-component-pagination-disable' : ''}" href="{getUrl('page', '', 'document_srl', '')}">
+    &laquo;&nbsp;{$lang->first_page}
+  </a>
+  <a loop="$page_no=$page_navigation->getNextPage()" class="b2-component-pagination-active"|cond="$page === $page_no" href="{getUrl('page',$page_no,'document_srl','','division',$division,'last_division',$last_division)}">
+    {$page_no}
+  </a>
+  <a class="b2-component-pagination-lastPage {$paginationDisable->lastPage === true ? 'b2-component-pagination-disable' : ''}" href="{getUrl('page', $page_navigation->last_page, 'document_srl', '')}">
+    {$lang->last_page}&nbsp;&raquo;
+  </a>
+</div>

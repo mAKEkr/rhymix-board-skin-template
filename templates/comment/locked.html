@@ -1,0 +1,8 @@
+<form action="./" method="get" onsubmit="return procFilter(this, input_password)">
+	<p><label for="cpw_{$comment->comment_srl}">{$lang->msg_is_secret} {$lang->msg_input_password}</label></p>
+	<p><input type="password" name="password" id="cpw_{$comment->comment_srl}" class="iText" /><input type="submit" class="btn" value="{$lang->cmd_input}" /></p>
+	<input type="hidden" name="mid" value="{$mid}" />
+	<input type="hidden" name="page" value="{$page}" />
+	<input type="hidden" name="document_srl" value="{$comment->get('document_srl')}" />
+	<input type="hidden" name="comment_srl" value="{$comment->get('comment_srl')}" />
+</form>

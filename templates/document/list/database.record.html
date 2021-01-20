@@ -1,0 +1,69 @@
+<!--// 애드온 참고 -->
+<div class="b2-component-EVSearch"></div>
+
+<table class="B2-document-list B2-skin-database-record">
+  <thead>
+    <tr>
+      <th cond="$grant->manager" class="checkbox">
+        <input type="checkbox" onclick="XE.checkboxToggleAll({ doClick:true });" title="게시물 전부 선택하기" />
+      </th>
+      <block loop="$list_config=>$key,$val">
+        <th cond="$val->idx === -1" class="{$key}">
+          {$val->name}
+        </th>
+        <th cond="$val->idx !== -1" class="extraVariables {$val->eid}">
+          {$val->name}
+        </th>
+      </block>
+    </tr>
+  </thead>
+  <tbody>
+    <block cond="$notice_list !== NULL">
+      {@
+        $noticeColSpan = count($list_config) + (int)($B2->Permissions->moderator === true);
+      }
+      <tr loop="$notice_list=>$document" class="document-list document-list-type-notice">
+        <td colspan="{$noticeColSpan}" class="title">
+          <a href="{getUrl('document_srl', $document->document_srl, 'comment_srl', null)}">
+            <include target="../../../assets/icons/exclamation-square-fill.svg" />
+            {$document->variables['title']}
+          </a>
+        </td>
+      </tr>
+    </block>
+    <block cond="$document_list !== NULL && $total_count > 0">
+      <tr loop="$document_list=>$no, $document" class="document-list" data-document-no="{$document->variables['document_srl']}">
+        <td cond="$grant->manager" class="checkbox">
+          <input type="checkbox" name="cart" value="{$document->document_srl}" class="iCheck" title="Check This Article" onclick="doAddDocumentCart(this)" checked="checked"|cond="$document->isCarted()" />
+        </td>
+        <block loop="$list_config=>$key,$val">
+          <block cond="$val->idx === -1">
+            <td cond="$val->type === 'no'" class="{$key}">
+              {$no}
+            </td>
+            <td cond="$val->type === 'regdate'" class="{$key}">
+              {@
+                $dateOver = strtotime('today') > strtotime($document->variables['regdate'])
+              }
+              <block cond="$dateOver === true">
+                {$document->getRegdate('Y-m-d')}
+              </block>
+              <block cond="$dateOver === false">
+                {$document->getRegdate('H:i:s')}
+              </block>
+            </td>
+            <td cond="in_array($val->type, ['no', 'regdate']) === false" class="{$key}">
+              {$document->variables[$val->type]}
+            </td>
+          </block>
+          <block cond="$val->idx !== -1">
+            <td cond="$val->idx !== -1" class="extraVariables {$key}">
+              {$document->getExtraValueHTML($val->idx)}
+            </td>
+          </block>
+        </block>
+      </tr>
+    </block>
+    <include cond="$total_count <= 0" target="../components/noContent-inline-table.html" />
+  </tbody>
+</table>

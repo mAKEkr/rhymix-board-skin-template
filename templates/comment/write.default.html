@@ -1,0 +1,22 @@
+<div class="v2-block comment-write">
+	<form cond="$grant->write_comment && $oDocument->isEnableComment()" action="./" method="post" onsubmit="return procFilter(this, insert_comment)" class="write_comment" id="write_comment">
+		<input type="hidden" name="mid" value="{$mid}" />
+		<input type="hidden" name="document_srl" value="{$oDocument->document_srl}" />
+		<input type="hidden" name="comment_srl" value="" />
+		<input type="hidden" name="content" value="" />
+		{$oDocument->getCommentEditor()}
+		<div class="write_author" cond="!$is_logged">
+			<input type="text" name="nick_name" placeholder="{$lang->writer}" />
+			<input type="password" name="password" placeholder="{$lang->password}" />
+			<input type="text" name="homepage" placeholder="{$lang->homepage}" />&nbsp;
+		</div>
+		<div class="btnArea">
+			<div class="secret">
+				<input cond="$module_info->secret=='Y'" type="checkbox" name="is_secret" value="Y" id="is_secret" />
+				<label cond="$module_info->secret=='Y'" for="is_secret">{$lang->secret}</label>
+			</div>
+			<button type="submit" class="btn">{$lang->cmd_comment_registration}</button>
+		</div>
+	</form>
+</div>
+</AJAXBoardComment>

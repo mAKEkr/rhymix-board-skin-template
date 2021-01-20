@@ -1,0 +1,103 @@
+<div class="container">
+<div class="v2-block document-header">
+	<div class="V2-header_wrap">
+		<h1>{$oDocument->getTitle()}</h1>
+	</div>
+	<div class="V2-wrap">
+		<div class="V2-float_left">
+			<img class="user-profile large" src="{$oDocument->getProfileImage()}"|cond="$oDocument->getProfileImage()" src="{$V2_default_profile}"|cond="!$oDocument->getProfileImage()" />
+			<a href="#popup_menu_area" class="member_{$oDocument->getMemberSrl()}" onclick="return false"><strong>{$oDocument->getNickName()}</strong>
+				(<block cond="$oDocument->variables['user_id']">{$oDocument->variables['user_id']}</block><block cond="!$oDocument->variables['user_id']">비회원</block>)
+			</a>
+			<span class="description">
+				<block cond="checkIPDisplayPermission($module_info->general_ip_wildcard_permission, 'wildcard', $user_infomation)">
+					({HiddenIPAddress($oDocument->variables['ipaddress'], $module_info->general_ip_wildcard_address)})
+				</block>
+				<block cond="!checkIPDisplayPermission($module_info->general_ip_wildcard_permission, 'wildcard', $user_infomation)">
+					({$oDocument->variables['ipaddress']})
+				</block>
+			</span>
+		</div>
+		<div class="V2-float_right">
+			<block cond="$oDocument->variables['regdate'] != $oDocument->variables['last_update']">
+				<span class="primary" cond=""><strong>{getTimeGap($oDocument->getUpdate('YmdHis'), 'Y-m-d H:i:s')}</strong>에 갱신됨</span>
+				<span class="italic">{$oDocument->getRegdate('Y-m-d H:i:s')}에 작성됨</span>
+				<span>{$lang->cmd_vote} <strong>{$oDocument->get('voted_count')}</strong></span>
+				<span>{$lang->readed_count} <strong>{$oDocument->get('readed_count')}</strong></span>
+			</block>
+			<block cond="$oDocument->variables['regdate'] == $oDocument->variables['last_update']">
+				<span class="primary"><strong>{getTimeGap($oDocument->getRegdate('YmdHis'), 'Y-m-d H:i:s')}</strong>에 작성됨</span>
+				<span>{$lang->cmd_vote} <strong>{$oDocument->get('voted_count')}</strong></span>
+				<span>{$lang->readed_count} <strong>{$oDocument->get('readed_count')}</strong></span>
+			</block>
+		</div>
+	</div>
+</div>
+	{@
+		$extraCnt = 0;
+	}
+	<!--@foreach($oDocument->getExtraVars() as $key => $val)-->
+		<!--@if($val->getValueHTML() && $val->getValueHTML() != '')-->
+		{@
+			$extraCnt ++;
+		}
+		<!--@endif-->
+	<!--@endforeach-->
+<!--@if($extraCnt > 0)-->
+<div class="V2-block document-extravar" cond="$oDocument->isExtraVarsExists() && (!$oDocument->isSecret() || $oDocument->isGranted())">
+	<box loop="$oDocument->getExtraVars()=>$key, $val">
+		<!--@if($val->getValueHTML() && $val->getValueHTML() != '')-->
+		<div class="V2-wrap">
+			<div class="extravar-name">{$val->name}</div>
+			<div class="extravar-value">{$val->getValueHTML()}</div>
+		</div>
+		<!--@endif-->
+	</box>
+</div>
+<!--@endif-->
+<div class="v2-block document-view">
+	<block cond="$statusDocumentList === false">
+		{$lang->no_documents}
+	</block>
+	<block cond="$statusDocumentList !== false">
+		{$oDocument->getContent(false)}
+	</block>
+	<div class="V2-block document-votebox" cond="$module_info->view_votebox != 'disable'">
+		<a href="#" class="vote_up" onclick="doCallModuleAction('document', 'procDocumentVoteUp', '{$oDocument->document_srl}'); return false;">
+			<i class="ss-icon ss-navigateup"></i>
+			<span>{$oDocument->get('voted_count')!=0?$oDocument->get('voted_count'):'0'}</span>
+			<span class="description" cond="$module_info->general_vote_script">{$module_info->general_vote_script}</span>
+		</a>
+		<a href="#" class="vote_down" onclick="doCallModuleAction('document', 'procDocumentVoteDown', '{$oDocument->document_srl}'); return false;">
+			<span class="description" cond="$module_info->general_vote_script">{$module_info->general_blame_script}</span>
+			<span>{$oDocument->get('blamed_count')!=0?$oDocument->get('blamed_count'):'0'}</span>
+			<i class="ss-icon ss-navigatedown"></i>
+		</a>
+	</div>
+	<div class="document-signature" cond="$oDocument->getSignature() && ($module_info->flat_using_sign == 'enable')">
+		<span class="background">Signature</span>
+		{$oDocument->getSignature()}
+	</div>
+	{@ $tag_list = $oDocument->get('tag_list') }
+	<div class="V2-block document-tag" cond="count($tag_list) != 0">
+		<i class="ss-icon ss-tag"></i>
+		<a class="document-tags" loop="$tag_list=>$key,$val" href="{getUrl('search_target','tag','search_keyword',$val,'document_srl','')}" rel="tag">{htmlspecialchars($val)}</a>
+	</div>
+	<a class="document_{$oDocument->document_srl} action" href="#popup_menu_area" onclick="return false" style="float:right">{$lang->cmd_document_do}</a>
+</div>
+<!-- // include comment list -->
+<block cond="$layout_display !== false">
+	<include target="../comment/list.html" />
+	<include target="../comment/write.default.html" cond="$V2_ismobile === false" />
+	<include target="../comment/write.simple.html" cond="$V2_ismobile !== false" />
+	<div class="v2-block addon-menulist">
+		<div class="V2-float_left" cond="$V2Controller != 'document.list'">
+			<a href="#V2A-list"><i class="fa fa-list"></i>&nbsp;목록으로</a>
+		</div>
+		<div class="V2-float_right">
+			<a cond="$oDocument->isEditable()" href="{getUrl('act', 'dispBoardWrite', 'document_srl', $oDocument->document_srl)}"><i class="fa fa-pencil-square-o"></i>&nbsp;글 수정하기</a>
+			<a cond="$oDocument->isEditable()" href="{getUrl('act', 'dispBoardDelete', 'document_srl', $oDocument->document_srl)}"><i class="ss-icon ss-delete"></i>&nbsp;글 삭제하기</a>
+		</div>
+	</div>
+</block>
+</div>

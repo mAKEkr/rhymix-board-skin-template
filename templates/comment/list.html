@@ -1,0 +1,85 @@
+<!-- AJAXBoard를 기본적으로 사용하셔야합니다 -->
+
+<AJAXBoardComment>
+<div class="V2-block comment-list" id="comment">
+	<h1>댓글 <strong>{$oDocument->getCommentCount()}</strong>개</h1>
+	<div id="smallCommentWriter" class="comment-lists active" style="display:none">
+		<h2>댓글 작성하기</h2>
+		<form cond="$grant->write_comment && $oDocument->isEnableComment()" action="./" method="post" onsubmit="return procFilter(this, insert_comment)" class="write_comment" id="write_comment">
+			<input type="hidden" name="mid" value="{$mid}" />
+			<input type="hidden" name="document_srl" value="{$oDocument->document_srl}" />
+			<input type="hidden" name="parent_srl" value="" />
+			<textarea name="content" rows="3" cols="42"></textarea>
+			<button type="submit" class="V2-submit btn">{$lang->cmd_comment_registration}</button>
+		</form>
+	</div>
+
+	<block cond="$oDocument->getCommentcount()" loop="$oDocument->getComments()=>$key, $comment">
+		{@
+			$comment_depth = (int)$comment->get('depth');
+			$comment_depth = ($comment_depth >= 4) ? 4 : $comment_depth;
+		}
+		<div id="comment_{$comment->comment_srl}" class="comment-lists depth{$comment_depth}">
+			<block cond="$comment_depth == 4">
+				{@
+					$parent_srl = (int)$comment->parent_srl;
+					$oCommentModel = getModel('comment');
+					$parentComment = $oCommentModel->getComment($parent_srl);
+				}
+				<a class="reply_info" href="{getUrl('document_srl', $document_srl)}#comment_{$parentComment->comment_srl}">[{$parentComment->getNickName()}님의 댓글에 대한 답글]</a>
+			</block>
+			<img class="user-profile medium" src="{$comment->getProfileImage()}"|cond="$comment->getProfileImage()" src="{$V2_default_profile}"|cond="!$comment->getProfileImage()" alt="" align="left" />
+			<div class="comment_tools" cond="$comment->isGranted()||!$comment->get('member_srl')">
+				<a href="{getUrl('act', 'dispBoardModifyComment', 'comment_srl', $comment->comment_srl, '_', '', 'listStlye', '')}" title="{$lang->cmd_modify}"><i class="ss-icon ss-compose"></i></a>
+				<a href="{getUrl('act', 'dispBoardDeleteComment', 'comment_srl', $comment->comment_srl, '_', '', 'listStyle', '')}" title="{$lang->cmd_delete}"><i class="ss-icon ss-delete"></i></a>
+			</div>
+			<h2 class="editable"|cond="$comment->isGranted()||!$comment->variables['member_srl']">
+				<!-- // 회원이 아니고 홈페이지 링크가 존재할경우 -->
+				<a class="comment-author" cond="!$comment->variables['member_srl'] && $comment->homepage" href="{$comment->getHomepageUrl()}">{$comment->getNickName()}</a>
+				<!-- // 회원이 아니고 홈페이지 링크가 존재하지 않을경우 -->
+				<span class="comment-author" cond="!$comment->variables['member_srl'] && !$comment->homepage">{$comment->getNickName()}</span>
+				<!-- // 회원일경우 -->
+				<a class="comment-author member_{$comment->variables['member_srl']}" cond="$comment->variables['member_srl']" href="#popup_menu_area" onclick="return false">{$comment->getNickName()}</a>
+				<span class="description" cond="$module_info->comment_display_ip == 'enable'">
+					<block cond="checkIPDisplayPermission($module_info->general_ip_wildcard_permission, 'wildcard', $user_infomation)">
+						({HiddenIPAddress($comment->variables['ipaddress'], $module_info->general_ip_wildcard_address)})
+					</block>
+					<block cond="!checkIPDisplayPermission($module_info->general_ip_wildcard_permission, 'wildcard', $user_infomation)">
+						({$comment->variables['ipaddress']})
+					</block>
+				</span>
+				<span class="vote" cond="$module_info->comment_votebox != 'disable'">
+					<a onclick="doCallModuleAction('comment','procCommentVoteUp','{$comment->comment_srl}'); return false;" title="{$lang->cmd_vote}">
+						<i class="ss-icon ss-navigateup"></i>&nbsp;<strong>{$comment->variables['voted_count']}</strong>
+					</a>
+					<a onclick="doCallModuleAction('comment','procCommentVoteDown','{$comment->comment_srl}'); return false;" title="{$lang->cmd_vote_down}">
+						<i class="ss-icon ss-navigatedown"></i>&nbsp;<strong>{$comment->variables['blamed_count']}</strong>
+					</a>
+				</span>
+				<span class="date">{getTimeGap($comment->getRegdate('YmdHis'), 'Y-m-d H:i:s')}</span>
+			</h2>
+			<!--@if(!$comment->isAccessible())-->
+				<include target="./comment.locked.html" />
+			<!--@else-->
+				{$comment->getContent(false)}
+			<!--@end-->
+			<a class="comment-reply"|cond="$grant->write_comment" class="comment-reply not_grant"|cond="!$grant->write_comment" cond="$oDocument->allowComment() && $oDocument->isEnableComment()" href="{getUrl('act', 'dispBoardReplyComment', 'comment_srl', $comment->comment_srl, '_', '', 'listStyle', '')}">
+				<i class="ss-icon ss-quote"></i>&nbsp;이 댓글에 답글달기
+			</a>
+		</div>
+	</block>
+	<block cond="!$oDocument->getCommentcount()"> <!-- // not found any comments -->
+		<div class="V2-block not_found_comments">코멘트가 없습니다</div>
+	</block>
+</div>
+
+<div class="V2-block addon-pagination" cond="$oDocument->comment_page_navigation">
+	<ul class="pagination">
+		<li><a href="{getUrl('cpage', 1, 'listStyle', '')}#comment">&laquo;&nbsp;{$lang->first_page}</a></li>
+		<block loop="$page_no=$oDocument->comment_page_navigation->getNextPage()">
+			<li cond="$cpage == $page_no" class="active"><a href="#">{$page_no}</a></li>
+			<li cond="$cpage != $page_no"><a href="{getUrl('cpage', $page_no, 'listStyle', '')}#comment">{$page_no}</a></li>
+		</block>
+		<li><a href="{getUrl('cpage', $oDocument->comment_page_navigation->last_page, 'listStyle', '')}#comment">{$lang->last_page}&nbsp;&raquo;</a></li>
+	</ul>
+</div>

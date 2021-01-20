@@ -1,0 +1,31 @@
+<div class="V2-block comment-content" cond="$oSourceComment->isExists()">
+	<h3 class="author">
+		<a cond="$oSourceComment->homepage" href="{$oSourceComment->homepage}">{$oSourceComment->getNickName()}</a>
+		<strong cond="!$oSourceComment->homepage">{$oSourceComment->getNickName()}</strong>
+	</h3>
+	{$oSourceComment->getContent(false)}
+</div>
+<div class="V2-block comment-write">
+	<h2 cond="!$oSourceComment->isExists()">댓글 수정하기</h2>
+	<form cond="$grant->write_comment" action="./" method="post" onsubmit="return procFilter(this, insert_comment)" class="write_comment" id="write_comment">
+		<input type="hidden" name="mid" value="{$mid}" />
+		<input type="hidden" name="document_srl" value="{$oComment->get('document_srl')}" />
+		<input type="hidden" name="comment_srl" value="{$oComment->get('comment_srl')}" />
+		<input type="hidden" name="parent_srl" value="{$oComment->get('parent_srl')}" />
+		<input type="hidden" name="content" value="{htmlspecialchars($oComment->get('content'))}" />
+		{$oComment->getEditor()}
+		<div class="write_author" cond="!$is_logged">
+			<input type="text" name="nick_name" placeholder="{$lang->writer}" />
+			<input type="password" name="password" placeholder="{$lang->password}" />
+			<input type="text" name="homepage" placeholder="{$lang->homepage}" />&nbsp;
+		</div>
+		<div class="btnArea">
+			<div class="secret">
+				<input cond="$module_info->secret=='Y'" type="checkbox" name="is_secret" value="Y" id="is_secret" />
+				<label cond="$module_info->secret=='Y'" for="is_secret">{$lang->secret}</label>
+			</div>
+			<button type="submit" class="btn">{$lang->cmd_comment_registration}</button>
+		</div>
+	</form>
+</div>
+</AJAXBoardComment>

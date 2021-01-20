@@ -1,0 +1,19 @@
+<div class="b2-component b2-component-category-list">
+  {@
+    $activeCategory = ($category !== null) ? $category === $val->category_srl : false;
+  }
+  <a href="{getUrl('category', '', 'page', '')}" class="b2-category-item" class="b2-category-active"|cond="$category === null">
+    <strong>{$lang->total}</strong>
+  </a>
+  <div loop="$category_list=>$key, $val" cond="$val->depth == 0" class="on"|cond="$category == $val->category_srl" class="B2-category-item">
+    <a href="{getUrl('category', $val->category_srl, 'page', '')}" style="background-color:{$val->color};"|cond="$val->color">
+      <strong>{$val->title}</strong>
+      ({$val->document_count})
+    </a>
+    <div loop="$val->childs=>$depth1_key, $depth1_val" cond="($val->child_count > 0) && ($category_list[$depth1_val]->depth == '1')" class="on"|cond="$category == $depth1_val">
+      <a href="{getUrl('category', $depth1_val, 'page', '')}" style="background-color:{$category_list[$depth1_val]->color};"|cond="$category_list[$depth1_val]->color">
+        <strong>{$category_list[$depth1_val]->title}</strong> ({$category_list[$depth1_val]->document_count})
+      </a>
+    </div>
+  </div>
+</div>

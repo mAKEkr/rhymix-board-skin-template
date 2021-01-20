@@ -1,0 +1,83 @@
+<section class="document-write write-database-record">
+  <form action="./" method="post" onsubmit="return procFilter(this, window.insert)" class="board_write">
+    <input type="hidden" name="mid" value="{$mid}" />
+    <input type="hidden" name="document_srl" value="{$document_srl}" />
+
+    <header>
+      <div class="write-title">
+        <select name="category_srl" cond="$module_info->use_category=='Y'">
+          <option value="">{$lang->category}</option>
+          <option loop="$category_list => $val" disabled="disabled"|cond="!$val->grant" value="{$val->category_srl}" selected="selected"|cond="$val->grant&&$val->selected||$val->category_srl==$oDocument->get('category_srl')">
+            {str_repeat("&nbsp;&nbsp;",$val->depth)} {$val->title}
+          </option>
+        </select>
+        <input type="text" name="title" title="{$lang->title}" placeholder="{$lang->title}" value="{htmlspecialchars($oDocument->getTitleText())}"|cond="$oDocument->getTitleText()" />
+        <block cond="!$oDocument->isExists() || $oDocument->get('status') == 'TEMP'">
+          <button cond="$is_logged" class="b2-button-default" onclick="doDocumentLoad(this);">{$lang->cmd_load}</button>
+          <button cond="$is_logged" class="b2-button-default" onclick="doDocumentSave(this);">{$lang->cmd_temp_save}</button>
+        </block>
+      </div>
+
+      <!-- // 로그인 안했을때 -->
+      <div class="write-author" cond="$B2->Session->isLogin === false">
+        <input type="text" name="nick_name" value="{htmlspecialchars($oDocument->get('nick_name'))}" placeholder="{$lang->writer}" />
+        <input type="password" name="password" placeholder="{$lang->password}" />
+        <input type="hidden" name="homepage" value="{htmlspecialchars($oDocument->get('homepage'))}" />
+      </div>
+
+      <div class="write-options">
+        <block cond="$grant->manager">
+          {@
+            $titleColorSet = array('555555','222288','226622','2266EE','8866CC','88AA66','EE2222','EE6622','EEAA22','EEEE22')
+          }
+          <select name="title_color" id="title_color" style="color:#{$oDocument->get('title_color')};"|cond="$oDocument->get('title_color')" onchange="this.style.color=this.options[this.selectedIndex].style.color;">
+            <option value="" style="color:#000000;">{$lang->title_color}</option>
+            <option loop="$titleColorSet=>$titleColor" value="{$titleColor}" style="color:#{$titleColor}" selected="selected"|cond="$oDocument->get('title_color')==$titleColor">{$lang->title_color}</option>
+          </select>
+          <label>
+            <input type="checkbox" name="title_bold" id="title_bold" value="Y" checked="checked"|cond="$oDocument->get('title_bold')=='Y'" />
+            {$lang->title_bold}
+          </label>
+          <label>
+            <input type="checkbox" name="is_notice" value="Y" checked="checked"|cond="$oDocument->isNotice()" id="is_notice" />
+            {$lang->notice}
+          </label>
+        </blocks>
+      </div>
+    </header>
+
+    <div class="b2-write-content write-extravars {$module_info->extra_var_formtype}">
+      <div class="write-content-block description">
+        <span class="required">*</span> : {$lang->is_required}
+      </div>
+      <div class="write-content-block" loop="$extra_keys=>$key,$val" cond="count($extra_keys)">
+        <div class="title">
+          <span cond="$val->is_required=='Y'" class="required">*&nbsp;</span>{$val->name}
+        </div>
+        <div class="form">
+          {$val->getFormHTML()}
+        </div>
+      </div>
+      <div class="write-content-block">
+        <div class="title">
+          <span>요약</span>
+        </div>
+        <div class="form">
+          <input type="text" name="content" value="{$oDocument->getContentText()}" />
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <div class="b2-button-container">
+        <button type="submit" class="b2-button-primary">
+          <include target="../../../assets/icons/file-earmark-arrow-up-fill.svg" />
+          {$lang->cmd_submit}
+        </button>
+        <a class="b2-button-default" href="{getUrl('mid', $mid, 'document_srl', '', 'act', '')}">
+          {$lang->cmd_cancel}
+        </a>
+      </div>
+    </footer>
+  </form>
+</section>

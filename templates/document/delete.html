@@ -1,0 +1,15 @@
+<form action="./" method="get" onsubmit="return procFilter(this, delete_document)" class="context_message">
+	<input type="hidden" name="mid" value="{$mid}" />
+	<input type="hidden" name="page" value="{$page}" />
+	<input type="hidden" name="document_srl" value="{$document_srl}" />
+	<div class="skin-message V2-block">
+		<h1>{$lang->cmd_document_do} {$lang->confirm_delete}</h1>
+		<div class="content">
+			<p><strong>{$oDocument->getTitle()}</strong></p>
+			<div class="buttons">
+				<input type="submit" class="button green" href="#" value="{$lang->cmd_delete}"/>
+				<a class="button red" href="#" onclick="history.back();return false;">{$lang->cmd_back}</a>
+			</div>
+		</div>
+	</div>
+</form>

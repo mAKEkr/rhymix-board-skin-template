@@ -1,0 +1,15 @@
+<section class="board-message">
+	<header>
+		<h1>{$message}</h1>
+	</header>
+	<article>
+		<div class="B2-button-container">
+			<a cond="!$is_logged" class="B2-button B2-button-submit" href="{getUrl('act','dispMemberLoginForm')}">
+				{$lang->cmd_login}
+			</a>
+			<a class="B2-button B2-button-default" href="#" onclick="history.back(); return false;">
+				{$lang->cmd_back}
+			</a>
+		</div>
+	</article>
+</section>

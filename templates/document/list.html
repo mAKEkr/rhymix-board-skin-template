@@ -1,0 +1,21 @@
+<section class="document-list list-default">
+	<header>
+		<include target="../components/board/categoryList.html" />
+		<!--// <include target="../components/board/sortList.html" /> -->
+		<div class="b2-button-container">
+			<include target="../components/buttons/writeDocument.html" cond="$B2->Permissions->document->write" />
+		</div>
+	</header>
+
+	<include target="./list/database.record.html" />
+
+	<footer>
+		<include cond="$total_count > 0 && $B2->DisplayType !== 'database.record'" target="../components/board/search.html" />
+		<div class="b2-button-container">
+			<include target="../components/buttons/documentFlag.html" cond="$B2->Permissions->moderator" />
+			<include target="../components/buttons/boardConfigure.html" cond="$B2->Permissions->moderator" />
+			<include target="../components/buttons/writeDocument.html" cond="$B2->Permissions->document->write" />
+		</div>
+		<include cond="$total_count > 0" target="../components/board/pagination.html" />
+	</footer>
+</section>

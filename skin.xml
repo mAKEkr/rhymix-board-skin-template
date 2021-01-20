@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<skin version="0.2">
+	<title>B2</title>
+	<description>Rhymix board template</description>
+	<version>1.0</version>
+	<date>2021-01-21</date>
+	<author email_address="m@ake.kr" link="http://ake.kr/">
+		<name>mAKEkr</name>
+	</author>
+	<license>MIT</license>
+</skin>

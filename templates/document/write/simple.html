@@ -1,0 +1,192 @@
+{@
+	include_once('./modules/file/file.class.php');
+	include_once('./modules/file/file.controller.php');
+
+	$oFileController = &getController('file');
+	$editor_sequence = '1';
+	$upload_target_srl = $document_srl;
+	$oFileController->setUploadInfo($editor_sequence, $upload_target_srl);
+	$_SESSION['upload_info'][$editor_sequence]->enabled = true;
+	$_SESSION['upload_info'][$editor_sequence]->upload_target_srl = $upload_target_srl;
+
+	Context::loadLang('./modules/editor/lang');
+}
+<load target="../../../../tpl/js/board.js" />
+<load target="../../resource/css/m_editor.css" />
+<load target="../../resource/js/extended/ajaxfileupload.js" type="body" />
+<load target="../../resource/js/extended/bootstrap-wysiwyg.js" />
+<load target="../../resource/js/extended/mobile_upload.js" />
+<load target="../../resource/js/extended/jquery.hotkeys.js" type="body" />
+
+<script>
+	//<![CDATA[
+	var lang_confirm_delete ='{$lang->confirm_delete}';
+	//]]>
+</script>
+
+<form action="./" method="post" onsubmit="return procFilter(this, window.insert)" class="board_write" id="ff">
+	<input type="hidden" name="mid" value="{$mid}" />
+	<input type="hidden" name="document_srl" value="{$document_srl}" />
+	<input type="hidden" name="use_html" value="Y" />
+	<input type="hidden" name="content" value="" />
+	<div class="V2-block write-author" cond="!$is_logged">
+		<!-- // 로그인 안했을때 -->
+		<div class="write_author">
+			<input type="text" name="nick_name" value="{htmlspecialchars($oDocument->get('nick_name'))}" placeholder="{$lang->writer}" />
+			<input type="password" name="password" placeholder="{$lang->password}" />
+			<input type="text" name="homepage" value="{htmlspecialchars($oDocument->get('homepage'))}" placeholder="{$lang->homepage}" />
+		</div>
+	</div>
+	<div class="V2-block write-header"|cond="$is_logged" class="V2-block write-header bordertop0"|cond="!$is_logged">
+		<div class="V2-float_left">
+			<select name="category_srl" cond="$module_info->use_category=='Y'">
+				<option value="">{$lang->category}</option>
+				<option loop="$category_list => $val" disabled="disabled"|cond="!$val->grant" value="{$val->category_srl}" selected="selected"|cond="$val->grant&&$val->selected||$val->category_srl==$oDocument->get('category_srl')">
+					{str_repeat("&nbsp;&nbsp;",$val->depth)} {$val->title} ({$val->document_count})
+				</option>
+			</select>
+		</div>
+		<div class="V2-wrap<!--@if($module_info->use_category=='Y')--> use_category<!--@end--><!--@if($is_logged)--> logged<!--@end-->">
+			<input cond="$oDocument->getTitleText()" type="text" name="title" title="{$lang->title}" placeholder="{$lang->title}" value="{htmlspecialchars($oDocument->getTitleText())}" />
+			<input cond="!$oDocument->getTitleText()" type="text" name="title" title="{$lang->title}" placeholder="{$lang->title}" />
+		</div>
+		<div class="V2-float_right">
+			<block cond="!$oDocument->isExists() || $oDocument->get('status') == 'TEMP'">
+				<button cond="$is_logged" class="btn" type="button" onclick="doDocumentLoad(this);">{$lang->cmd_load}</button>
+				<button cond="$is_logged" class="btn" type="button" onclick="doDocumentSave(this);">{$lang->cmd_temp_save}</button>
+			</block>
+		</div>
+	</div>
+	<div class="V2-block write-options">
+		<block cond="$grant->manager">
+			<div class="input-wrap colorset">
+				{@
+					$titleColorSet = array('555555','222288','226622','2266EE','8866CC','88AA66','EE2222','EE6622','EEAA22','EEEE22')
+				}
+				<select name="title_color" id="title_color" style="color:#{$oDocument->get('title_color')};"|cond="$oDocument->get('title_color')" onchange="this.style.color=this.options[this.selectedIndex].style.color;">
+					<option value="" style="color:#000000;">{$lang->title_color}</option>
+					<option loop="$titleColorSet=>$titleColor" value="{$titleColor}" style="color:#{$titleColor}" selected="selected"|cond="$oDocument->get('title_color')==$titleColor">{$lang->title_color}</option>
+				</select>
+			</div>
+			<div class="input-wrap">
+				<input type="checkbox" name="title_bold" id="title_bold" value="Y" checked="checked"|cond="$oDocument->get('title_bold')=='Y'" />
+				<label for="title_bold">{$lang->title_bold}</label>
+			</div>
+			<div class="input-wrap">
+				<input type="checkbox" name="is_notice" value="Y" checked="checked"|cond="$oDocument->isNotice()" id="is_notice" />
+				<label for="is_notice">{$lang->notice}</label>
+			</div>
+		</blocks>
+		<div class="input-wrap" cond="$module_info->secret=='Y'">
+			<input type="checkbox" name="is_secret" value="Y" checked="checked"|cond="$oDocument->isSecret()" id="is_secret" />
+			<label for="is_secret">{$lang->secret}</label>
+		</div>
+		<div class="input-wrap">
+			<input type="checkbox" name="allow_trackback" value="Y" checked="checked"|cond="$oDocument->allowTrackback()" id="allow_trackback" />
+			<label for="allow_trackback">{$lang->allow_trackback}</label>
+		</div>
+		<div class="input-wrap" cond="$is_logged == 'Y'">
+			<input type="checkbox" name="notify_message" value="Y" checked="checked"|cond="$oDocument->useNotify()" id="notify_message" />
+			<label for="notify_message">{$lang->notify}</label>
+		</div>
+		<div class="input-wrap">
+			<input type="checkbox" name="comment_status" value="ALLOW" checked="checked"|cond="$oDocument->allowComment()" id="comment_status" />
+			<label for="comment_status">{$lang->allow_comment}</label>
+		</div>
+		<div class="input-wrap" cond="is_array($status_list)" loop="$status_list=>$key, $value">
+			<input type="radio" name="status" value="{$key}" id="{$key}" <!--@if($oDocument->get('status') == $key || ($key == 'PUBLIC' && !$document_srl))-->checked="checked"<!--@end--> /> 
+			<label for="{$key}">{$value}</label>
+		</div>
+	</div>
+	<div class="V2-block write-extravars {$module_info->extra_var_formtype}" cond="count($extra_keys)">
+		<div class="write-extravars-block description"><span class="required">*</span> : {$lang->is_required}</div>
+		<div class="write-extravars-block" loop="$extra_keys=>$key,$val">
+			<div class="title">
+				<span cond="$val->is_required=='Y'" class="required">*</span>&nbsp;{$val->name}
+			</div>
+			<div class="form">
+				{$val->getFormHTML()}
+			</div>
+		</div>
+	</div>
+	<div class="V2-block write-content">
+		<div id="alerts"></div>
+		<div class="btn-toolbar" data-role="editor-toolbar" data-target="#editor">
+			<div class="btn-group">
+				<a class="btn" data-edit="bold" title="Bold (Ctrl/Cmd+B)"><i class="fa fa-bold"></i></a>
+				<a class="btn" data-edit="underline" title="Underline (Ctrl/Cmd+U)"><i class="fa fa-underline"></i></a>
+			</div>
+			<div class="btn-group">
+				<a class="btn" data-edit="justifyleft" title="Align Left (Ctrl/Cmd+L)"><i class="fa fa-align-left"></i></a>
+				<a class="btn" data-edit="justifycenter" title="Center (Ctrl/Cmd+E)"><i class="fa fa-align-center"></i></a>
+				<a class="btn" data-edit="justifyright" title="Align Right (Ctrl/Cmd+R)"><i class="fa fa-align-right"></i></a>
+				<!--// <a class="btn" data-edit="justifyfull" title="Justify (Ctrl/Cmd+J)"><i class="fa fa-align-justify"></i></a> -->
+			</div>
+			<div class="btn-group hide_w320">
+				<a class="btn" data-edit="insertunorderedlist" title="Bullet list"><i class="fa fa-list-ul"></i></a>
+				<!--//<a class="btn" data-edit="insertorderedlist" title="Number list"><i class="fa fa-list-ol"></i></a>-->
+			</div>
+			<div class="btn-group fr">
+				<a class="btn" data-edit="undo" title="Undo (Ctrl/Cmd+Z)"><i class="fa fa-undo"></i></a>
+				<a class="btn" data-edit="redo" title="Redo (Ctrl/Cmd+Y)"><i class="fa fa-repeat"></i></a>
+			</div>
+			<input type="text" data-edit="inserthtml" id="inserthtml" class="V2-displaynone" />
+		</div>
+		<div id="editor" class="xe_content">
+			<!--@if(!$oDocument->getContentText() && $mi->content_default)-->{$mi->content_default}<!--@else-->{$oDocument->getContent(false,'','',false)}<!--@end-->
+		</div>
+	</div>
+	<!--// file attachment -->
+	<div class="V2-block write-attachment" id="mUpload">
+		<div class="attachment-header">
+			<strong>{$lang->edit->upload_file}</strong> <button type="button" class="btn" onclick="jQuery('#Filedata').click()">{$lang->upload_file}</button>
+			<a class="V2-float_right" href="#" onclick="jQuery('#mUpload > #files').toggle(); return false;">파일 첨부목록 열기/닫기</a>
+		</div>
+		<ul id="files" class="clear">
+			<block cond="$oDocument->hasUploadedFiles()" loop="$oDocument->getUploadedFiles()=>$key,$file">
+				{@
+					$ext = substr($file->source_filename, -4);
+					$ext = strtolower($ext);
+					$type = 'etc';
+					if(in_array($ext,array('.jpg','jpeg','.gif','.png'))) $type = 'img';
+					if(in_array($ext,array('.mp3','.wav','.ogg','.aac'))) $type = 'music';
+					if(in_array($ext,array('webm','.mp4','.ogv','.avi','.mov','.mkv'))) $type = 'media';
+				}
+				<li cond="$type=='img'" id="file_{$file->file_srl}" class="success"><button type="button" data-file="{$file->uploaded_filename}" data-type="img" title="{$file->source_filename}" style="background-image:url({$file->uploaded_filename})" onclick="jQuery(this).parent().toggleClass('select')"><b>✔</b></button><a class="delete_file" href="#" onclick="delete_file({$file->file_srl});return false;"><b>X</b></a><a class="insert_file" href="#" onclick="insert_file({$file->file_srl});return false;"><i class="fa fa-arrow-up"></i></a></li>
+				<li cond="$type!='img'" id="file_{$file->file_srl}" class="success type2 {$type}">
+					<small>{$file->source_filename}</small>
+					<button type="button" data-file="{$file->uploaded_filename}" data-type="{$type}" data-dnld="{$file->download_url}" onclick="jQuery(this).parent().toggleClass('select')">
+						<b>✔</b>
+					</button>
+					<a class="delete_file" href="#" onclick="delete_file({$file->file_srl});return false;"><b>X</b></a>
+					<a class="insert_file" href="#" onclick="insert_file({$file->file_srl});return false;">
+						<i class="fa fa-arrow-up"></i>
+					</a>
+				</li>
+			</block>
+			<li id="loading"></li>
+			<li class="info clear<!--@if($oDocument->hasUploadedFiles())--> is_img<!--@end-->">
+				<span>{$lang->no_files}</span>
+				<div>
+					<button type="button" class="all bd_btn" id="mEditorSelect"><i class="fa fa-check"></i> <span>{$lang->cmd_select_all}</span><span>{$lang->cmd_deselect_all}</span></button>
+					<button type="button" class="insert bd_btn" id="mEditorInsert"><i class="fa fa-arrow-up"></i> {$lang->edit->link_file}</button>
+					<button type="button" class="delete bd_btn" id="mEditorDelete"><i class="fa fa-trash-o"></i> {$lang->edit->delete_selected}</button>
+				</div>
+			</li>
+		</ul>
+		<input id="Filedata" type="file" name="Filedata" onchange="ajaxFileUpload();" class="V2-displaynone" />
+	</div>
+
+	<div class="V2-block write-tags">
+		<i class="ss-icon ss-tag"></i>
+		<input type="text" name="tags" id="tags" value="{htmlspecialchars($oDocument->get('tags'))}" title="Tag" placeholder="{$lang->tag}: {$lang->about_tag}" />
+	</div>
+	<div class="V2-block addon-menulist write-footer">
+		<div class="V2-float_left">
+			<a href="{getUrl('mid', $mid, 'document_srl', '', 'act', '')}"><i class="fa fa-list"></i>&nbsp;{$lang->cmd_list}</a>
+		</div>
+		<div class="V2-float_right">
+			<i class="ss-icon ss-check"></i><input type="submit" value="{$lang->cmd_registration}" onclick="frmSubmit();return false" />
+		</div>
+	</div>
+</form>	

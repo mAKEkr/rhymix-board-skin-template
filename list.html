@@ -1,0 +1,8 @@
+{@
+	$ControllerValue = 'document.';
+	$ControllerValue .= ( $oDocument->isExists() !== false ) ? 'view' : 'list';
+
+	Context::set('B2-route', $ControllerValue);
+}
+
+<include target="./core/bootstrap.html" />

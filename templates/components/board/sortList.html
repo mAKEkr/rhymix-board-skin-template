@@ -1,0 +1,5 @@
+<div class="b2-component b2-component-board-sortList">
+  <block loop="$list_config=>$key,$val">
+    <a href="{getUrl('sort_index', $val->type, 'order_type', $order_type)}">{$val->name}</a>
+  </block>
+</div>

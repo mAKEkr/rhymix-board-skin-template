@@ -1,0 +1,15 @@
+<div class="b2-component b2-component-search">
+  <form cond="$grant->view" action="{getUrl()}" id="board_search" method="get" onsubmit="return procFilter(this, search)" no-error-return-url="true">
+    <input type="hidden" name="vid" value="{$vid}" />
+    <input type="hidden" name="mid" value="{$mid}" />
+    <input type="hidden" name="category" value="{$category}" />
+    <select name="search_target">
+      <option loop="$search_option=>$key,$val" value="{$key}" selected="selected"|cond="$search_target==$key">{$val}</option>
+    </select>
+    <input type="text" name="search_keyword" value="{htmlspecialchars($search_keyword)}" title="{$lang->cmd_search}" />
+    <button type="submit" class="ss-icon ss-search" title="{$lang->cmd_search}" onclick="xGetElementById('board_search').submit();return false;"></button>
+  </form>
+  <a cond="$last_division" href="{getUrl('page',1,'document_srl','','division',$last_division,'last_division','')}" class="btn">
+    {$lang->cmd_search_next}
+  </a>
+</div>
