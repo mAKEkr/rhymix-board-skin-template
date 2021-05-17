@@ -1,22 +1,26 @@
 <include target="./include/functions.php" />
 
-<div id="b2-container" class="module-{$B2->Module} action-{$B2->Action}">
-	<include target="./layout/header.html" />
+<block cond="$B2->RequestType === 'html'">
+  <div id="b2-container" class="module-{$B2->Module} action-{$B2->Action}">
+    <include target="./layout/header.html" />
 
-	<include cond="$B2->Route === 'document.list'" target="./document/list.html" />
-	<block cond="$B2->Route === 'document.view'">
-		<include cond="$oDocument->isExists()" target="./document/view.html" /> <!-- // document exist check -->
-		<include target="./document/list.html" />
-	</block>
-	<include cond="$B2->Route === 'document.write'" target="./document/write.html" />
-	<include cond="$B2->Route === 'document.delete'" target="./document/delete.html" />
+    <include cond="$B2->Route === 'document.list'" target="./document/list.html" />
+    <block cond="$B2->Route === 'document.view'">
+      <include cond="$oDocument->isExists()" target="./document/view.html" /> <!-- // document exist check -->
+      <include target="./document/list.html" />
+    </block>
+    <include cond="$B2->Route === 'document.write'" target="./document/write.html" />
+    <include cond="$B2->Route === 'document.delete'" target="./document/delete.html" />
 
-	<include cond="$B2->Route === 'comment.write'" target="./comment/write.html" cond="" />
-	<include cond="$B2->Route === 'comment.delete'" target="./comment/delete.html" />
+    <include cond="$B2->Route === 'comment.write'" target="./comment/write.html" cond="" />
+    <include cond="$B2->Route === 'comment.delete'" target="./comment/delete.html" />
 
-	<include cond="$B2->Route === 'board.message'" target="./board/message.html" />
-	<include cond="$B2->Route === 'board.password'" target="./board/password.html" />
-	<include cond="$B2->Route === 'board.tagList'" target="./board/tagList.html" />
+    <include cond="$B2->Route === 'system.message'" target="./board/message.html" />
+    <include cond="$B2->Route === 'system.password'" target="./board/password.html" />
 
-	<include target="./layout/footer.html" />
-</div>
+    <include target="./layout/footer.html" />
+  </div>
+</block>
+<block cond="$B2->RequestType === 'json'">
+  <include target="../requests/json.php" />
+</block>

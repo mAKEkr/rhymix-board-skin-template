@@ -7,6 +7,8 @@
   $B2->Module = $route[0];
   $B2->Action = $route[1]; // list - view - write - commentWrite - delete?
   unset($route);
+
+  $B2->RequestType = 'html';
   $B2->DisplayType = 'default'; // 스킨
   $B2->Device = 'PC'; // PC / Mobile
 
