@@ -1,5 +1,5 @@
 <?php
-  require_once './modules/board/skins/xelab_b2/core/methods.php';
+  // require_once './modules/board/skins/xelab_b2/core/methods.php';
 
   $B2 = new stdClass();
   $B2->Route = Context::get('B2-route');
@@ -11,6 +11,10 @@
   $B2->RequestType = 'html';
   $B2->DisplayType = 'default'; // 스킨
   $B2->Device = 'PC'; // PC / Mobile
+
+  if ($_GET['requestType'] === 'json') {
+    $B2->RequestType = 'json';
+  }
 
   $module_info = Context::get('module_info');
   $grant = Context::get('grant');
@@ -90,6 +94,10 @@
   ];
 
   $B2->Config = (object)[
+    'CustomContent'       => (object)[
+      'Header' => $module_info->header_text,
+      'Footer' => $module_info->footer_text
+    ],
     'usingSticker'        => false,
     'customDisplayTitle'  => '',
     'listUpvoteHighlight' => [
@@ -98,14 +106,13 @@
       'rate'  => 0.6
     ],
     'downvoteBlindCount'  => 5,
-    'CustomContent'       => (object)[
-      'Header' => $module_info->header_text,
-      'Footer' => $module_info->footer_text
-    ]
   ];
 
-  $B2->Methods = new Methods();
+  // $B2->Methods = new Methods();
 
+  $is_logged = Context::get('is_logged');
+  $logged_info = Context::get('logged_info');
+  
   $B2->Session = new StdClass();
   $B2->Session->isLogin = $is_logged === true;
 

@@ -21,6 +21,5 @@
     <include target="./layout/footer.html" />
   </div>
 </block>
-<block cond="$B2->RequestType === 'json'">
-  <include target="../requests/json.php" />
-</block>
+
+<include cond="$B2->RequestType === 'json'" target="../requests/json.php" />
