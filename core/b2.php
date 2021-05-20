@@ -1,5 +1,5 @@
 <?php
-  // require_once './modules/board/skins/xelab_b2/core/methods.php';
+  require_once Context::get('tpl_path') . 'methods.php';
 
   $B2 = new stdClass();
   $B2->Route = Context::get('B2-route');
@@ -8,8 +8,8 @@
   $B2->Action = $route[1]; // list - view - write - commentWrite - delete?
   unset($route);
 
-  $B2->Production = true; // 개발모드. 모르면 건들지 마세요
-  $B2->DevBaseURL = 'http://172.27.12.151:3000/';
+  $B2->Production = false; // 개발모드. 모르면 건들지 마세요
+  $B2->DevBaseURL = 'http://172.27.12.151:3000';
 
   $B2->RequestType = 'html';
   $B2->DisplayType = 'default'; // 스킨
@@ -111,7 +111,7 @@
     'downvoteBlindCount'  => 5,
   ];
 
-  // $B2->Methods = new Methods();
+  $B2->Methods = new Methods();
 
   $is_logged = Context::get('is_logged');
   $logged_info = Context::get('logged_info');

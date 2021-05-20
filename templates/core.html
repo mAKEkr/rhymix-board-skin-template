@@ -1,6 +1,7 @@
 <include target="./include/functions.php" />
 
 <block cond="$B2->RequestType === 'html'">
+  <div id="app"></div>
   <div id="b2-container" class="module-{$B2->Module} action-{$B2->Action}">
     <include target="./layout/header.html" />
 
@@ -20,6 +21,11 @@
 
     <include target="./layout/footer.html" />
   </div>
+  <block cond="$B2->Production === false">
+    개발모드
+    <script type="module" src="{$B2->Methods->loadPublicAsset('/@vite/client')}"></script>
+    <script type="module" src="{$B2->Methods->loadPublicAsset('/src/main.ts')}"></script>
+  </block>
 </block>
 
 <include cond="$B2->RequestType === 'json'" target="../requests/json.php" />

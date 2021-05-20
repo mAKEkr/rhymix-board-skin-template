@@ -31,5 +31,15 @@
         return $ip;
       }
     }
+
+    public function loadPublicAsset($path) {
+      $B2 = Context::get('B2');
+
+      if ($B2->Production === false) {
+        return $B2->DevBaseURL . $path;
+      } else {
+        return $path;
+      }
+    }
   }
 ?>
