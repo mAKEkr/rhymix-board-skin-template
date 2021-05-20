@@ -1,21 +1,21 @@
 <?php
   class Methods {
     public function HiddenIPAddress($ip, $wildcard = '..***.***'){
-      if(!isset($ip)) return;
+      if (!isset($ip)) return;
   
       $wildcard_list = explode('.', $wildcard);
   
-      if((int)count($wildcard_list) === 4){
+      if ((int)count($wildcard_list) === 4){
         $ipblocks = explode('.', $ip);
   
-        if((int)count($ipblocks) !== 4){
+        if ((int)count($ipblocks) !== 4) {
           return $ip;
         }
   
         $return_str = null;
   
-        foreach($ipblocks as $key => $val){
-          if($wildcard_list[$key] != NULL){
+        foreach ($ipblocks as $key => $val) {
+          if ($wildcard_list[$key] != NULL) {
             $ipblocks[$key] = $wildcard_list[$key];
           }
   

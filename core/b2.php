@@ -8,6 +8,9 @@
   $B2->Action = $route[1]; // list - view - write - commentWrite - delete?
   unset($route);
 
+  $B2->Production = true; // 개발모드. 모르면 건들지 마세요
+  $B2->DevBaseURL = 'http://172.27.12.151:3000/';
+
   $B2->RequestType = 'html';
   $B2->DisplayType = 'default'; // 스킨
   $B2->Device = 'PC'; // PC / Mobile
