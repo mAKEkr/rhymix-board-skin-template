@@ -3,4 +3,5 @@
   $B2 = Context::get('B2');
 }
 
-<include target="../templates/core.html" />
+<include cond="$B2->RequestType === 'html'" target="../templates/core.html" />
+<include cond="$B2->RequestType === 'json'" target="../requests/json.php" />

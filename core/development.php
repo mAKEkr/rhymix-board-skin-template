@@ -5,6 +5,6 @@
   */
 
   define('__B2_DEVELOPMENT__', true);
-
   define('__B2_DEVELOPMENT_FRONTEND_HOST__', 'http://172.27.12.151:3000');
+
 ?>
