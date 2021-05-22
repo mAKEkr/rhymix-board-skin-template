@@ -35,8 +35,8 @@
     public function loadPublicAsset($path) {
       $B2 = Context::get('B2');
 
-      if ($B2->Production === false) {
-        return $B2->DevBaseURL . $path;
+      if (__B2_DEVELOPMENT__ === true) {
+        return __B2_DEVELOPMENT_FRONTEND_HOST__ . $path;
       } else {
         return $path;
       }

@@ -8,15 +8,16 @@
   $B2->Action = $route[1]; // list - view - write - commentWrite - delete?
   unset($route);
 
-  $B2->Production = false; // 개발모드. 모르면 건들지 마세요
-  $B2->DevBaseURL = 'http://172.27.12.151:3000';
-
   $B2->RequestType = 'html';
   $B2->DisplayType = 'default'; // 스킨
   $B2->Device = 'PC'; // PC / Mobile
 
   if ($_GET['requestType'] === 'json') {
     $B2->RequestType = 'json';
+  }
+
+  if (file_exists(Context::get('tpl_path') . 'development.php')) {
+    require_once Context::get('tpl_path') . 'development.php';
   }
 
   $module_info = Context::get('module_info');
@@ -97,7 +98,7 @@
   ];
 
   $B2->Config = (object)[
-    'CustomContent'       => (object)[
+    'customContent'       => (object)[
       'Header' => $module_info->header_text,
       'Footer' => $module_info->footer_text
     ],
