@@ -1,21 +1,27 @@
 <?php
   require_once Context::get('tpl_path') . 'methods.php';
 
+  // xe context get
+  $is_logged = Context::get('is_logged');
+  $logged_info = Context::get('logged_info');
+
   $B2 = new stdClass();
   $B2->Route = Context::get('B2-route');
   $route = explode('.', Context::get('B2-route'));
   $B2->Module = $route[0];
-  $B2->Action = $route[1]; // list - view - write - commentWrite - delete?
+  $B2->Action = $route[1];
   unset($route);
 
   $B2->RequestType = 'html';
   $B2->DisplayType = 'default'; // 스킨
   $B2->Device = 'PC'; // PC / Mobile
 
+  // request type check
   if ($_GET['requestType'] === 'json') {
     $B2->RequestType = 'json';
   }
 
+  // load development config
   if (file_exists(Context::get('tpl_path') . 'development.php')) {
     require_once Context::get('tpl_path') . 'development.php';
   }
@@ -45,6 +51,8 @@
     'sticker'     => false,
     'anonymous'   => $module_info->use_anonymous === 'Y'
   ];
+
+  $B2->Grant = $grant;
 
   $B2->Permissions = (object)[
     'access'          => $grant->access,
@@ -85,7 +93,7 @@
       'count'             => $page_navigation->total_count,
       'displayCount'      => $module_info->list_count
     ],
-    'comment'         => (object)[
+    'comment'         => (object)[ // 미작동
       'itemCount'         => $additionalSetup->comment->comment_count,
       'pageCount'         => $additionalSetup->comment->comment_page_count
     ],
@@ -94,14 +102,14 @@
       'lastPage'        => $page_navigation->total_page,
       'displayLength'   => $module_info->page_count,
     ],
-    'extraVariables'  => [],
+    'extraVariables'  => [], // 미구현
   ];
 
   $B2->Config = (object)[
     'customContent'       => (object)[
       'Header' => $module_info->header_text,
       'Footer' => $module_info->footer_text
-    ],
+    ], // xml 파일과 설정 병합
     'usingSticker'        => false,
     'customDisplayTitle'  => '',
     'listUpvoteHighlight' => [
@@ -113,9 +121,6 @@
   ];
 
   $B2->Methods = new Methods();
-
-  $is_logged = Context::get('is_logged');
-  $logged_info = Context::get('logged_info');
   
   $B2->Session = new StdClass();
   $B2->Session->isLogin = $is_logged === true;

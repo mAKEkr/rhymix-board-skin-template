@@ -10,12 +10,6 @@
 				(<block cond="$oDocument->variables['user_id']">{$oDocument->variables['user_id']}</block><block cond="!$oDocument->variables['user_id']">비회원</block>)
 			</a>
 			<span class="description">
-				<block cond="checkIPDisplayPermission($module_info->general_ip_wildcard_permission, 'wildcard', $user_infomation)">
-					({HiddenIPAddress($oDocument->variables['ipaddress'], $module_info->general_ip_wildcard_address)})
-				</block>
-				<block cond="!checkIPDisplayPermission($module_info->general_ip_wildcard_permission, 'wildcard', $user_infomation)">
-					({$oDocument->variables['ipaddress']})
-				</block>
 			</span>
 		</div>
 		<div class="V2-float_right">

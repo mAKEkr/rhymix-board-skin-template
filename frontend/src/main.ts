@@ -1,4 +1,10 @@
 import { createApp } from 'vue'
+import { createStore } from 'vuex'
 import App from './App.vue'
 
-createApp(App).mount('#app')
+const B2 = createApp(App)
+  .use(createStore({
+
+  }))
+
+B2.mount('#app')

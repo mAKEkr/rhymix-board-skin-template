@@ -74,6 +74,11 @@
     "@vue/compiler-dom" "3.0.11"
     "@vue/shared" "3.0.11"
 
+"@vue/devtools-api@^6.0.0-beta.11":
+  version "6.0.0-beta.11"
+  resolved "https://registry.yarnpkg.com/@vue/devtools-api/-/devtools-api-6.0.0-beta.11.tgz#4fb4161ee41ba75f3f5198d4bfd80e4ffb7f2462"
+  integrity sha512-vpw61AkW9U8c2upjJCljHq9eh1KkD4FJ7DYbRzIETpj9WAw2VESudJZosAk4M+7npBo1Zu1jNQY03HUMVO/czQ==
+
 "@vue/reactivity@3.0.11":
   version "3.0.11"
   resolved "https://registry.yarnpkg.com/@vue/reactivity/-/reactivity-3.0.11.tgz#07b588349fd05626b17f3500cbef7d4bdb4dbd0b"
@@ -102,6 +107,13 @@
   version "3.0.11"
   resolved "https://registry.yarnpkg.com/@vue/shared/-/shared-3.0.11.tgz#20d22dd0da7d358bb21c17f9bde8628152642c77"
   integrity sha512-b+zB8A2so8eCE0JsxjL24J7vdGl8rzPQ09hZNhystm+KqSbKcAej1A+Hbva1rCMmTTqA+hFnUSDc5kouEo0JzA==
+
+axios@^0.21.1:
+  version "0.21.1"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-0.21.1.tgz#22563481962f4d6bde9a76d516ef0e5d3c09b2b8"
+  integrity sha512-dKQiRHxGD9PPRIUNIWvZhPTPpl1rf/OxTYKsqKUDjBwYylTvV7SjSHJb9ratfyzM6wCdLCOYLzs73qpg5c4iGA==
+  dependencies:
+    follow-redirects "^1.10.0"
 
 balanced-match@^1.0.0:
   version "1.0.2"
@@ -214,6 +226,11 @@ estree-walker@^2.0.1:
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/estree-walker/-/estree-walker-2.0.2.tgz#52f010178c2a4c117a7757cfe942adb7d2da4cac"
   integrity sha512-Rfkk/Mp/DL7JVje3u18FxFujQlTNR2q6QfMSMB7AvCBx91NGj/ba3kCfza0f6dVDbw7YlRf/nDrn7pQrCCyQ/w==
+
+follow-redirects@^1.10.0:
+  version "1.14.1"
+  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.14.1.tgz#d9114ded0a1cfdd334e164e6662ad02bfd91ff43"
+  integrity sha512-HWqDgT7ZEkqRzBvc2s64vSZ/hfOceEol3ac/7tKwzuvEyWx3/4UegXh5oBOIotkGsObyk3xznnSRVADBgWSQVg==
 
 fs.realpath@^1.0.0:
   version "1.0.0"
@@ -598,6 +615,13 @@ vue@^3.0.5:
     "@vue/compiler-dom" "3.0.11"
     "@vue/runtime-dom" "3.0.11"
     "@vue/shared" "3.0.11"
+
+vuex@^4.0.1:
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/vuex/-/vuex-4.0.1.tgz#e83c541d6f31173969efabb2c5d1c465b682887e"
+  integrity sha512-MddakQTAnImDkK1YhEESowKSU5KcjqHH3L1ScPx1lj6NzDDX0FuRBZqJoME5O7/nvj9puudDf6xnWU2w/cqI7g==
+  dependencies:
+    "@vue/devtools-api" "^6.0.0-beta.11"
 
 wrappy@1:
   version "1.0.2"
